@@ -1,4 +1,3 @@
-import 'package:dio/dio.dart';
 import 'package:fit_zone/core/api/api_excuter.dart';
 import 'package:fit_zone/core/api/api_result.dart';
 import 'package:fit_zone/core/api/api_manager.dart';
@@ -16,12 +15,19 @@ class GetMealDetailsDatasourceImpl implements GetMealDetailsDatasource {
   @override
   Future<ApiResult<MealDetails>> getMealDetails(String mealId) async {
     return await executeApi<MealDetails>(() async {
-      Response response = await apiManager.getRequestForMeal(
+      final response = await apiManager.getRequestForMeal(
         endpoint: EndPoint.getMealDetailsById,
         queryParameters: {"i": mealId},
       );
 
-      final meal = response.data['meals'][0];
+      final data = response.data;
+
+      if (data == null || data['meals'] == null || data['meals'].isEmpty) {
+        throw Exception('Meal not found for id: $mealId');
+      }
+
+      final meal = data['meals'][0];
+
       return MealDetails.fromJson(meal);
     });
   }

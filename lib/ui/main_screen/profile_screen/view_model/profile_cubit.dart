@@ -11,13 +11,14 @@ class ProfileCubit extends Cubit<ProfileState> {
   ProfileCubit(this.getProfileUseCase) : super(ProfileInitial());
 
   void doIntent(ProfileIntent intent) async {
+    if (isClosed) return;
     if (intent is LoadProfileIntent) {
       emit(ProfileLoading());
       try {
         final profile = await getProfileUseCase.execute();
-        emit(ProfileLoaded(profile));
+        if (!isClosed) emit(ProfileLoaded(profile));
       } catch (e) {
-        emit(ProfileError(e.toString()));
+        if (!isClosed) emit(ProfileError(e.toString()));
       }
     }
   }

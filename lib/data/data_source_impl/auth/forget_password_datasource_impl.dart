@@ -23,11 +23,9 @@ class ForgetPasswordDatasourceImpl extends ForgetPasswordDatasource {
       final response = await apiManager.postRequest(
         endpoint: EndPoint.forgetPasswordEndpoint,
         body: {'email': email},
-        headers: {'Content-Type': 'application/json'},
       );
       return ForgetPasswordResponse.fromJson(response.data);
     });
-
   }
 
   @override
@@ -40,7 +38,6 @@ class ForgetPasswordDatasourceImpl extends ForgetPasswordDatasource {
           body: {
             "resetCode": resetCode,
           },
-          headers: {'Content-Type': 'application/json'},
         );
         return response.data;
       },
@@ -66,7 +63,6 @@ class ForgetPasswordDatasourceImpl extends ForgetPasswordDatasource {
             "email": email,
             "newPassword": newPassword,
           },
-          headers: {'Content-Type': 'application/json'},
         );
 
         return response.data;

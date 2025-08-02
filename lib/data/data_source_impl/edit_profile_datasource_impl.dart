@@ -6,8 +6,6 @@ import 'package:fit_zone/core/api/api_excuter.dart';
 import 'package:fit_zone/core/api/api_manager.dart';
 import 'package:fit_zone/core/api/api_result.dart';
 import 'package:fit_zone/core/api/endpoints.dart';
-import 'package:fit_zone/core/cache/shared_pref.dart';
-import 'package:fit_zone/core/constant.dart';
 import 'package:fit_zone/data/data_source_contract/edit_profile_datasource.dart';
 import 'package:fit_zone/data/model/edit_profile_model.dart';
 import 'package:fit_zone/data/model/register_response/user_model.dart';
@@ -24,8 +22,6 @@ class EditProfileDatasourceImpl implements EditProfileDatasource {
   Future<ApiResult<UserModel>> editProfile({
     required EditProfileModel editProfileModel,
   }) async {
-    final token = CacheHelper.getData<String>(Constant.tokenKey);
-
     return await executeApi<UserModel>(() async {
       final requestData = {
         if (editProfileModel.firstName != null)
@@ -39,16 +35,9 @@ class EditProfileDatasourceImpl implements EditProfileDatasource {
         if (editProfileModel.goal != null) "goal": editProfileModel.goal,
       };
 
-      final headers = {
-        "Authorization": "Bearer $token",
-        "Content-Type": "application/json",
-        "Accept": "application/json",
-      };
-
       final response = await apiManager.put(
         endpoint: EndPoint.editProfile,
         data: requestData,
-        headers: headers,
       );
 
       return UserModel.fromJson(response.data);
@@ -57,8 +46,6 @@ class EditProfileDatasourceImpl implements EditProfileDatasource {
 
   @override
   Future<ApiResult<bool>> uploadPhoto({required String photoPath}) async {
-    final token = CacheHelper.getData<String>(Constant.tokenKey);
-
     return await executeApi<bool>(() async {
       final isPng = photoPath.toLowerCase().endsWith('.png');
 
@@ -74,9 +61,6 @@ class EditProfileDatasourceImpl implements EditProfileDatasource {
       final response = await apiManager.putFormData(
         endpoint: EndPoint.uploadProfilePhoto,
         formData: formData,
-        headers: {
-          "Authorization": "Bearer $token",
-        },
       );
 
       if (response.data is Map && response.data['message'] == 'success') {

@@ -1,5 +1,4 @@
 import 'package:easy_localization/easy_localization.dart';
-import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:fit_zone/firebase_options.dart';
 import 'package:fit_zone/ui/Auth/view_model/cubit/auth_cubit.dart';
@@ -22,18 +21,17 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  await FirebaseAppCheck.instance.activate(
-    androidProvider: AndroidProvider.debug,
-    appleProvider: AppleProvider.debug,
-  );
   await Hive.initFlutter();
   Hive.registerAdapter(ConversationModelAdapter());
   Hive.registerAdapter(MessageModelAdapter());
   await configureDependencies();
   Bloc.observer = MyBlocObserver();
-  ApiManager.init();
+  final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+
+  ApiManager.init(navigatorKey);
   await CacheHelper.init();
   final authCubit = getIt<AuthCubit>();
+
   runApp(
     EasyLocalization(
       supportedLocales: const [Locale('en'), Locale('ar')],
@@ -42,7 +40,9 @@ void main() async {
       startLocale: const Locale('en'),
       child: BlocProvider<AuthCubit>(
         create: (context) => authCubit,
-        child: const MyApp(),
+        child: MyApp(
+          navigatorKey: navigatorKey,
+        ),
       ),
     ),
   );

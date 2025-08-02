@@ -3,7 +3,6 @@ import 'package:fit_zone/core/api/api_manager.dart';
 import 'package:fit_zone/core/api/api_result.dart';
 import 'package:fit_zone/core/api/endpoints.dart';
 import 'package:fit_zone/core/cache/shared_pref.dart';
-import 'package:fit_zone/core/constant.dart';
 import 'package:fit_zone/data/data_source_contract/auth/logout_datasource.dart';
 import 'package:injectable/injectable.dart';
 
@@ -17,12 +16,9 @@ class LogoutDatasourceImpl implements LogoutDatasource {
   @override
   Future<ApiResult<bool>> logout() async {
     try {
-      final token = CacheHelper.getData<String>(Constant.tokenKey);
-
       return await executeApi<bool>(() async {
         var apiResponse = await apiManager.getRequest(
           endpoint: EndPoint.logoutEndpoint,
-          headers: {"Authorization": "Bearer $token"},
         );
         if (apiResponse.data != null &&
             apiResponse.data["message"] == "success") {
